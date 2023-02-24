@@ -1,1 +1,1 @@
-# bulk-image-tweaker
+# Bulk Image Tweaker (BIT)
