@@ -1,8 +1,9 @@
-import math
 import os
 import shutil
 
-from PIL import Image, ImageEnhance
+import helper
+
+from PIL import Image
 
 
 # Directories
@@ -14,21 +15,13 @@ ROOT_ERROR_FOLDER = os.path.join(ROOT, "error")
 FILE_TYPE = ".webp"
 MAX_WIDTH = 1260
 FLIP_HORIZONTALLY = False
-IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".bmp", ".webp", ".png"]
+
 
 # Image Enhancements
 BRIGHTNESS = 1.00
 CONTRAST = 1.05
 SHARPNESS = 1.25
 COLOR = 1.30
-
-
-def IsImage(file):
-	for extension in IMAGE_EXTENSIONS:
-		if file.endswith(extension):
-			return True
-	
-	return False
 
 
 # Introduction
@@ -51,34 +44,25 @@ for folder in os.listdir(ROOT_INPUT_FOLDER):
 		file_output_path = os.path.join(folder_output_path, image)
 		file_error_path = os.path.join(ROOT_ERROR_FOLDER, image)
 
-		if IsImage(image):
+		if helper.IsImage(image):
 			try:
 				# Open
 				img = Image.open(file_input_path)
 
-				
-				data = list(img.getdata())
-				img = Image.new('RGB', img.size) # not handling opacity
-				img.putdata(data) # should strip exif
-
-
 				# Resize
-				w, h = img.size
-				ratio = h / w
-				new_h = math.floor(MAX_WIDTH * ratio)
-				img = img.resize( (MAX_WIDTH, new_h) )
+				img = helper.ResizeImageWithRatio(img, MAX_WIDTH)
+
+				# Strip EXIF Data
+				img = helper.StripEXIF(img)
 
 				# Enhance
-				img = ImageEnhance.Brightness(img).enhance(BRIGHTNESS)
-				img = ImageEnhance.Contrast(img).enhance(CONTRAST)
-				img = ImageEnhance.Sharpness(img).enhance(SHARPNESS)
-				img = ImageEnhance.Color(img).enhance(COLOR)
+				img = helper.EnhanceImage(BRIGHTNESS, CONTRAST, SHARPNESS, COLOR)
 
 				# Flip?
 				if FLIP_HORIZONTALLY:
 					img = img.transpose(Image.FLIP_LEFT_RIGHT)
 
-				# Save TODO
+				# Save
 				basename = os.path.splitext(image)[0]
 				export_file_path = os.path.join(folder_output_path, basename + FILE_TYPE)
 				img = img.save(export_file_path)
