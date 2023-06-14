@@ -14,6 +14,7 @@ ROOT_ERROR_FOLDER = os.path.join(ROOT, "error")
 
 FILE_TYPE = ".webp"
 MAX_WIDTH = 1260
+REMOVE_EXIF = False
 FLIP_HORIZONTALLY = False
 
 
@@ -53,7 +54,8 @@ for folder in os.listdir(ROOT_INPUT_FOLDER):
 				img = helper.ResizeImageWithRatio(img, MAX_WIDTH)
 
 				# Strip EXIF Data
-				img = helper.StripEXIF(img)
+				if REMOVE_EXIF:
+					img = helper.RemoveEXIF(img)
 
 				# Enhance
 				img = helper.EnhanceImage(BRIGHTNESS, CONTRAST, SHARPNESS, COLOR)

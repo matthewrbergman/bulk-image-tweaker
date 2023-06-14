@@ -27,9 +27,9 @@ def EnhanceImage(brightness, contrast, sharpness, color):
 	
 	return img
 
-def StripEXIF(img):
+def RemoveEXIF(img):
 	img_data = list(img.getdata())
-	img = Image.new('RGB', img.size)
+	img = Image.new(img.mode, img.size)
 	img.putdata(img_data)
 	
 	return img
